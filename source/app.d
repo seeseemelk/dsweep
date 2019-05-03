@@ -21,6 +21,7 @@ immutable ushort borderColour = 244;
 immutable ushort mineColour = 160 | Attribute.reverse;
 immutable ushort backgroundColour = 237;
 immutable ushort selectedBackground = 9;
+immutable ushort flagColour = 21 | Attribute.reverse;
 static showBorders = false;
 
 class Minefield
@@ -155,7 +156,9 @@ void drawField(Minefield field, uint offsetX, uint offsetY)
 
 void drawTileContent(ref Tile tile, uint x, uint y, bool inversed = false)
 {
-	if (!tile.visible)
+	if (tile.flag)
+		setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
+	else if (!tile.visible)
 		setCell(x, y, ' ', Color.basic, inversed ? selectedBackground : backgroundColour);
 	else if (tile.mine)
 		setCell(x, y, '*', mineColour, inversed ? selectedBackground : Color.basic);
@@ -212,6 +215,8 @@ void floodSelect(Minefield field, int x, int y)
 
 void select(Minefield field)
 {
+	if (field.selected.flag)
+		return;
 	if (!field.selected.mine && field.selected.count == 0)
 		field.floodSelect(field.cursorX, field.cursorY);
 	else
@@ -219,16 +224,25 @@ void select(Minefield field)
 	drawCursor(field);
 }
 
+void toggleFlag(Minefield field)
+{
+	if (!field.selected.visible)
+	{
+		field.selected.flag = !field.selected.flag;
+		drawCursor(field);
+	}
+}
+
 void main()
 {
 	init();
 
 	setOutputMode(OutputMode.color256);
-	Minefield field = new Minefield();
-	/*if (showBorders)
-		field = new Minefield(width() / 2 - 1, height() / 2 - 1);
-	else
-		field = new Minefield(width() - 1, height() - 1);*/
+	Minefield field;// = //new Minefield();
+	//if (showBorders)
+	//	field = new Minefield(width() / 2 - 1, height() / 2 - 1);
+	//else
+	field = new Minefield(width(), height());
 	field.renderFull(0, 0);
 	field.drawCursor();
 	Event e;
@@ -251,6 +265,18 @@ void main()
 			case Key.space:
 			case Key.enter:
 				field.select();
+				break;
+			default:
+				break;
+		}
+		switch (e.ch)
+		{
+			case 'r':
+				field.renderFull();
+				break;
+			case 'f':
+			case 'p':
+				field.toggleFlag();
 				break;
 			default:
 				break;
