@@ -171,6 +171,11 @@ void drawTileContent(ref Tile tile, uint x, uint y, bool inversed = false)
 void renderFull(Minefield field, uint offsetX = 0, uint offsetY = 0)
 {
 	drawField(field, offsetX, offsetY);
+	int y = field.height + 1;
+	writeText("ARROW KEYS     Move cursor", 0, y++);
+	writeText("SPACE/ENTER    Click tile", 0, y++);
+	writeText("F/P            Toggle flag", 0, y++);
+	writeText("ESCAPE         Quit", 0, y++);
 }
 
 void drawCursor(Minefield field, uint offsetX = 0, uint offsetY = 0, bool inversed = true)
@@ -233,6 +238,14 @@ void toggleFlag(Minefield field)
 	}
 }
 
+void writeText(string text, int x, int y)
+{
+	foreach (c; text)
+	{
+		setCell(x++, y, c, Color.basic, Color.basic);
+	}
+}
+
 void main()
 {
 	init();
@@ -242,7 +255,8 @@ void main()
 	//if (showBorders)
 	//	field = new Minefield(width() / 2 - 1, height() / 2 - 1);
 	//else
-	field = new Minefield(width(), height());
+	field = new Minefield();
+	//field = new Minefield(width(), height());
 	field.renderFull(0, 0);
 	field.drawCursor();
 	Event e;
