@@ -1,0 +1,6 @@
+name "dsweep"
+description "A Minesweeper clone written in D"
+authors "Sebastiaan de Schaetzen"
+copyright "Copyright © 2019, Sebastiaan de Schaetzen"
+license "MIT"
+dependency "termbox" version="~>0.0.5"

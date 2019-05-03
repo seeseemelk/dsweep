@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dsweep
+dsweep.so
+dsweep.dylib
+dsweep.dll
+dsweep.a
+dsweep.lib
+dsweep-test-*
+*.exe
+*.o
+*.obj
+*.lst
