@@ -1,5 +1,5 @@
 name "dsweep"
-description "A Minesweeper clone written in D"
+description "A Minesweeper clone for the terminal written in D"
 authors "Sebastiaan de Schaetzen"
 copyright "Copyright © 2019, Sebastiaan de Schaetzen"
 license "MIT"
