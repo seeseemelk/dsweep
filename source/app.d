@@ -4,14 +4,7 @@ import std.conv : to;
 import std.algorithm.comparison;
 import termbox;
 
-struct Tile
-{
-	bool mine;
-	bool visible;
-	bool flag;
-	int count = 0;
-}
-
+/*
 immutable Color[] tileColours = [
 	Color.basic, // 0
 	Color.red // 1
@@ -244,11 +237,11 @@ void writeText(string text, int x, int y)
 	{
 		setCell(x++, y, c, Color.basic, Color.basic);
 	}
-}
+}*/
 
-void main()
-{
-	init();
+/*void main()
+{*/
+/*init();
 
 	setOutputMode(OutputMode.color256);
 	Minefield field;// = //new Minefield();
@@ -300,5 +293,5 @@ void main()
 	}
 	while (e.key != Key.esc);
 
-	shutdown();
-}
+	shutdown();*/
+//}
