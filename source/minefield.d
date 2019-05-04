@@ -12,11 +12,22 @@ public:
 final @safe class Minefield
 {
 public:
-    this(uint width = 15, uint height = 15)
+    invariant
+    {
+        assert(cursorX < width && cursorY < height);
+        assert(tiles.length == width);
+        assert(tiles[0].length == height);
+    }
+
+    this(uint width = 20, uint height = 15)
     {
         this.width = width;
         this.height = height;
+        cursorX = width / 2;
+        cursorY = height / 2;
+        tiles = new Tile[][](width, height);
         clear();
+        generate();
     }
 
     unittest
@@ -45,8 +56,8 @@ public:
 
     unittest
     {
-        auto minefield = new Minefield;
-        assert(minefield.selected is minefield.tile(0, 0));
+        auto field = new Minefield;
+        assert(field.selected is field.tile(field.cursorX, field.cursorY));
     }
 
     bool isInField(int x, int y) const pure
@@ -63,19 +74,6 @@ public:
         assert(minefield.isInField(0, minefield.height) == false);
         assert(minefield.isInField(-1, 0) == false);
         assert(minefield.isInField(0, -1) == false);
-    }
-
-    void clear()
-    {
-        tiles = new Tile[][](width, height);
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                tiles[x][y] = new Tile;
-            }
-        }
     }
 
     unittest
@@ -112,6 +110,17 @@ public:
         return result;
     }
 
+    void clear()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x][y] = new Tile;
+            }
+        }
+    }
+
     bool isMine(uint x, uint y)
     {
         if (isInField(x, y))
@@ -123,6 +132,7 @@ public:
     unittest
     {
         auto minefield = new Minefield;
+        minefield.tile(0, 0).mine = false;
         assert(minefield.isMine(0, 0) == false);
     }
 
@@ -133,14 +143,8 @@ public:
         assert(minefield.isMine(0, 0) == true);
     }
 
-    void generate()
-    {
-        placeMines();
-        calculateMineCounts();
-    }
-
-    int cursorX = 0;
-    int cursorY = 0;
+    uint cursorX = 0;
+    uint cursorY = 0;
     uint width;
     uint height;
 
@@ -182,15 +186,22 @@ private:
         }
     }
 
+    void generate()
+    {
+        placeMines();
+        calculateMineCounts();
+    }
+
     unittest
     {
-        auto minefield = new Minefield;
-        minefield.tile(3, 3).mine = true;
-        minefield.calculateMineCounts();
-        assert(minefield.tile(0, 0).count == 0);
-        assert(minefield.tile(2, 2).count == 1);
-        assert(minefield.tile(3, 2).count == 1);
-        assert(minefield.tile(4, 4).count == 1);
+        auto field = new Minefield;
+        field.clear();
+        field.tile(3, 3).mine = true;
+        field.calculateMineCounts();
+        assert(field.tile(0, 0).count == 0);
+        assert(field.tile(2, 2).count == 1);
+        assert(field.tile(3, 2).count == 1);
+        assert(field.tile(4, 4).count == 1);
     }
 
     Tile[][] tiles;

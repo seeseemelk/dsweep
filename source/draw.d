@@ -1,5 +1,6 @@
 module draw;
 import termbox;
+public import termbox : flush;
 import minefield;
 
 struct DrawSettings
@@ -24,12 +25,17 @@ private
     immutable ushort flagColour = 21 | Attribute.reverse;
 }
 
-void drawTile(Tile tile, uint x, uint y, bool inversed = false)
+void drawTile(Tile tile, uint x, uint y, bool inversed = false, bool bad = false)
 {
     x += drawSettings.offsetX;
     y += drawSettings.offsetY;
     if (tile.flag)
-        setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
+    {
+        if (!tile.mine && bad)
+            setCell(x, y, 'X', mineColour, inversed ? selectedBackground : Color.basic);
+        else
+            setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
+    }
     else if (!tile.visible)
         setCell(x, y, ' ', Color.basic, inversed ? selectedBackground : backgroundColour);
     else if (tile.mine)
@@ -40,21 +46,61 @@ void drawTile(Tile tile, uint x, uint y, bool inversed = false)
         setCell(x, y, '.', Color.basic, inversed ? selectedBackground : 0);
 }
 
-void drawCursor(Minefield field, bool inversed = true)
+void undrawCursor(Minefield field)
 {
-    field.selected.drawTile(field.cursorX, field.cursorY, inversed);
+    field.selected.drawTile(field.cursorX, field.cursorY);
 }
 
-void drawField(Minefield minefield)
+void drawCursor(Minefield field)
 {
-    for (int x = 0; x < minefield.width; x++)
+    field.selected.drawTile(field.cursorX, field.cursorY, true);
+}
+
+void drawField(Minefield field, bool bad = false)
+{
+    clear();
+    drawSettings.offsetX = (width() - field.width) / 2;
+    drawSettings.offsetY = (height() - field.height) / 2;
+    for (int x = 0; x < field.width; x++)
     {
-        for (int y = 0; y < minefield.height; y++)
+        for (int y = 0; y < field.height; y++)
         {
-            minefield.tile(x, y).drawTile(x, y);
+            field.tile(x, y).drawTile(x, y, false, bad);
         }
     }
+    field.drawCursor();
+    field.drawHelp();
     flush();
+}
+
+void drawMessage(string text)
+{
+    uint x = drawSettings.offsetX;
+    uint y = drawSettings.offsetY - 2;
+    foreach (c; text)
+    {
+        setCell(x++, y, c, Color.basic, Color.basic);
+    }
+    flush();
+}
+
+void drawMessageBelow(Minefield field, string text, uint offset)
+{
+    uint x = drawSettings.offsetX;
+    uint y = drawSettings.offsetY + field.height + offset + 1;
+    foreach (c; text)
+    {
+        setCell(x++, y, c, Color.basic, Color.basic);
+    }
+    flush();
+}
+
+void drawHelp(Minefield field)
+{
+    field.drawMessageBelow("ARROWS: Move cursor", 0);
+    field.drawMessageBelow("SPACE:  Click selected tile", 1);
+    field.drawMessageBelow("F/P:    Toggle flag", 2);
+    field.drawMessageBelow("ESCAPE: Quit", 3);
 }
 
 void startGraphics()
