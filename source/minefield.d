@@ -33,8 +33,8 @@ public:
     unittest
     {
         auto minefield = new Minefield;
-        assert(minefield.width == 15);
-        assert(minefield.height == 15);
+        assert(minefield.width > 0);
+        assert(minefield.height > 0);
         assert(minefield.tiles !is null);
         assert(minefield.tiles.length == minefield.width);
         assert(minefield.tiles[0].length == minefield.height);

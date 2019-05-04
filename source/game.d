@@ -84,26 +84,32 @@ bool click(ref Game game)
 unittest
 {
     // A normal tile can be clicked.
+    Game game;
     auto field = new Minefield;
+    game.field = field;
     field.selected.mine = false;
-    assert(field.click() == false);
+    assert(game.click() == false);
     assert(field.selected.visible == true);
 }
 
 unittest
 {
     // A mine tile kills
+    Game game;
     auto field = new Minefield;
+    game.field = field;
     field.selected.mine = true;
-    assert(field.click() == true);
+    assert(game.click() == true);
 }
 
 unittest
 {
     // A flagged tile cannot be clicked.
+    Game game;
     auto field = new Minefield;
-    field.toggleFlag();
-    field.click();
+    game.field = field;
+    game.toggleFlag();
+    game.click();
     assert(field.selected.visible == false);
 }
 
@@ -121,20 +127,24 @@ void toggleFlag(ref Game game)
 unittest
 {
     // An invisible tile can have its flag toggled.
+    Game game;
     auto field = new Minefield;
+    game.field = field;
     field.selected.visible = false;
     assert(field.selected.flag == false);
-    field.toggleFlag();
+    game.toggleFlag();
     assert(field.selected.flag == true);
 }
 
 unittest
 {
     // A visible tile cannot have a flag.
+    Game game;
     auto field = new Minefield;
+    game.field = field;
     field.selected.visible = true;
     assert(field.selected.flag == false);
-    field.toggleFlag();
+    game.toggleFlag();
     assert(field.selected.flag == false);
 }
 
