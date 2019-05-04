@@ -37,7 +37,10 @@ void drawTile(Tile tile, uint x, uint y, bool inversed = false, bool bad = false
             setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
     }
     else if (!tile.visible)
-        setCell(x, y, ' ', Color.basic, inversed ? selectedBackground : backgroundColour);
+    {
+        auto colour = inversed ? selectedBackground : backgroundColour;
+        setCell(x, y, '#', colour, colour);
+    }
     else if (tile.mine)
         setCell(x, y, '*', mineColour, inversed ? selectedBackground : Color.basic);
     else if (tile.count > 0)
