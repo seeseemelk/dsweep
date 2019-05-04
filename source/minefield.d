@@ -16,8 +16,7 @@ public:
     {
         this.width = width;
         this.height = height;
-        tiles = new Tile[][](width, height);
-        fill();
+        clear();
     }
 
     unittest
@@ -30,16 +29,14 @@ public:
         assert(minefield.tiles[0].length == minefield.height);
     }
 
-    auto tile(uint x, uint y)
-    in(x < width && y < height)
+    auto tile(uint x, uint y) inout
+    in(isInField(x, y))
     out(tile; tile !is null)
     {
-        if (tiles[x][y] is null)
-            tiles[x][y] = new Tile;
         return tiles[x][y];
     }
 
-    auto selected() @property
+    auto selected() inout @property
     in(isInField(cursorX, cursorY))
     out(tile; tile !is null)
     {
@@ -52,7 +49,7 @@ public:
         assert(minefield.selected is minefield.tile(0, 0));
     }
 
-    bool isInField(int x, int y) pure
+    bool isInField(int x, int y) const pure
     {
         return x >= 0 && y >= 0 && x < width && y < height;
     }
@@ -71,6 +68,14 @@ public:
     void clear()
     {
         tiles = new Tile[][](width, height);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x][y] = new Tile;
+            }
+        }
     }
 
     unittest
@@ -128,15 +133,18 @@ public:
         assert(minefield.isMine(0, 0) == true);
     }
 
-    int cursorX = 0;
-    int cursorY = 0;
-
-private:
-    void fill()
+    void generate()
     {
         placeMines();
         calculateMineCounts();
     }
+
+    int cursorX = 0;
+    int cursorY = 0;
+    uint width;
+    uint height;
+
+private:
 
     void placeMines()
     {
@@ -174,7 +182,16 @@ private:
         }
     }
 
-    uint width;
-    uint height;
+    unittest
+    {
+        auto minefield = new Minefield;
+        minefield.tile(3, 3).mine = true;
+        minefield.calculateMineCounts();
+        assert(minefield.tile(0, 0).count == 0);
+        assert(minefield.tile(2, 2).count == 1);
+        assert(minefield.tile(3, 2).count == 1);
+        assert(minefield.tile(4, 4).count == 1);
+    }
+
     Tile[][] tiles;
 }

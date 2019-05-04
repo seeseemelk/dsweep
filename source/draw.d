@@ -26,6 +26,8 @@ private
 
 void drawTile(Tile tile, uint x, uint y, bool inversed = false)
 {
+    x += drawSettings.offsetX;
+    y += drawSettings.offsetY;
     if (tile.flag)
         setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
     else if (!tile.visible)
@@ -41,4 +43,27 @@ void drawTile(Tile tile, uint x, uint y, bool inversed = false)
 void drawCursor(Minefield field, bool inversed = true)
 {
     field.selected.drawTile(field.cursorX, field.cursorY, inversed);
+}
+
+void drawField(Minefield minefield)
+{
+    for (int x = 0; x < minefield.width; x++)
+    {
+        for (int y = 0; y < minefield.height; y++)
+        {
+            minefield.tile(x, y).drawTile(x, y);
+        }
+    }
+    flush();
+}
+
+void startGraphics()
+{
+    init();
+    setOutputMode(OutputMode.color256);
+}
+
+void endGraphics()
+{
+    shutdown();
 }

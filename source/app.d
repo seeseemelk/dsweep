@@ -1,8 +1,39 @@
-import std.stdio;
+import minefield;
+import draw;
+
+struct Game
+{
+    enum State
+    {
+        PLAYING,
+        DEAD,
+        WON
+    };
+    State state = State.PLAYING;
+}
+
+void pollInput()
+{
+    import termbox;
+
+    Event e;
+    pollEvent(&e);
+}
+
+void main()
+{
+    startGraphics();
+    auto minefield = new Minefield;
+    minefield.drawField();
+    pollInput();
+    endGraphics();
+}
+
+/*import std.stdio;
 import std.random;
 import std.conv : to;
 import std.algorithm.comparison;
-import termbox;
+import termbox;*/
 
 /*
 immutable Color[] tileColours = [
