@@ -13,16 +13,26 @@ DrawSettings drawSettings;
 
 private
 {
-    immutable Color[] tileColours = [
+    immutable ushort[] tileColours = [
         Color.basic, // 0
-        Color.red // 1
+        12, // 1
+        2, // 2
+        9, // 3
+        24, // 4
+        138, // 5
+        43, // 6
+        96, // 7
+        250 // 8
     ];
 
-    immutable ushort borderColour = 244;
-    immutable ushort mineColour = 160 | Attribute.reverse;
-    immutable ushort backgroundColour = 237;
-    immutable ushort selectedBackground = 9;
-    immutable ushort flagColour = 21 | Attribute.reverse;
+    immutable enum Colour : ushort
+    {
+        border = 224,
+        mine = 160 | Attribute.reverse,
+        background = 237,
+        selected = 9,
+        flag = 21 | Attribute.reverse
+    }
 }
 
 void drawTile(Tile tile, uint x, uint y, bool inversed = false, bool bad = false)
@@ -32,21 +42,22 @@ void drawTile(Tile tile, uint x, uint y, bool inversed = false, bool bad = false
     if (tile.flag)
     {
         if (!tile.mine && bad)
-            setCell(x, y, 'X', mineColour, inversed ? selectedBackground : Color.basic);
+            setCell(x, y, 'X', Colour.mine, inversed ? Colour.selected : Color.basic);
         else
-            setCell(x, y, 'P', flagColour, inversed ? selectedBackground : Color.basic);
+            setCell(x, y, 'P', Colour.flag, inversed ? Colour.selected : Color.basic);
     }
     else if (!tile.visible)
     {
-        auto colour = inversed ? selectedBackground : backgroundColour;
+        auto colour = inversed ? Colour.selected : Colour.background;
         setCell(x, y, '#', colour, colour);
     }
     else if (tile.mine)
-        setCell(x, y, '*', mineColour, inversed ? selectedBackground : Color.basic);
+        setCell(x, y, '*', Colour.mine, inversed ? Colour.selected : Color.basic);
     else if (tile.count > 0)
-        setCell(x, y, '0' + tile.count, tileColours[1], inversed ? selectedBackground : Color.basic);
+        setCell(x, y, '0' + tile.count, tileColours[tile.count], inversed
+                ? Colour.selected : Color.basic);
     else if (tile.count == 0)
-        setCell(x, y, '.', Color.basic, inversed ? selectedBackground : 0);
+        setCell(x, y, '.', Color.basic, inversed ? Colour.selected : 0);
 }
 
 void undrawCursor(Minefield field)

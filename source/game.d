@@ -15,6 +15,13 @@ struct Game
 
     State state = State.PLAYING;
     Minefield field;
+
+    invariant
+    {
+        assert(countTiles >= 0);
+        assert(tilesClicked >= 0 && tilesClicked < countTiles);
+    }
+
     int countTiles;
     int tilesClicked;
 }
@@ -37,8 +44,7 @@ void floodSelect(ref Game game, int x, int y)
         return;
 
     Tile tile = game.field.tile(x, y);
-    assert(tile !is null);
-    if (tile.visible)
+    if (tile.visible || tile.flag)
         return;
     game.tilesClicked++;
     tile.visible = true;
@@ -253,6 +259,8 @@ void start(ref Game game)
 {
     game.state = Game.State.PLAYING;
     game.field = new Minefield;
+    game.countTiles = 0;
+    game.tilesClicked = 0;
 
     foreach (tile; game.field)
     {
